@@ -18,9 +18,9 @@ jobs:
           mkdir reports
 
       - name: Install node
-        uses: actions/setup-node@v4
+        uses: actions/checkout@v3
         with:
-          node-version: '14'
+          node-version: '18.x'
 
       - name: Install Newman and Newman-Extra
         run: |
