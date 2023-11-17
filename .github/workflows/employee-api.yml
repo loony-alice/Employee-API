@@ -39,11 +39,11 @@ jobs:
       - name: Send Email
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: smtp.gmail.com
-          server_port: 465
+          server_address: ${{ secrets.SERVER_ADDRESS }}
+          server_port: ${{ secrets.SERVER_PORT }}
           secure: true
-          username: loony.test.001@gmail.com
-          password: lctymekgmjuvjryk
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
           subject: Github Actions job result
           to: cloud.user@loonycorn.com
           from: Loonycorn
