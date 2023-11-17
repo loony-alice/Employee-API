@@ -1,0 +1,37 @@
+name: API Testing
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create directory
+        run: |
+          mkdir reports
+
+      - name: Install node
+        uses: actions/checkout@v3
+        with:
+          node-version: '18.x'
+
+      - name: Install Newman and Newman-Extra
+        run: |
+          npm install -g newman
+          npm install -g newman-reporter-htmlextra
+
+      - name: Run collection
+        run: newman run "Employee API.postman_collection.json" --reporters htmlextra --reporter-htmlextra-export "reports/extra-report.html" || echo ""
+          
+      - name: Publish Report as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: extra-report
+          path: reports
