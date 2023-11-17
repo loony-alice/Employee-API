@@ -1,0 +1,495 @@
+{
+	"info": {
+		"_postman_id": "1d3db44e-2072-4b7f-98de-6b733f4ec6ca",
+		"name": "Employee API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30787778"
+	},
+	"item": [
+		{
+			"name": "Get Employees",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response is an array with at least one element\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    pm.expect(responseData).to.have.lengthOf.at.least(1);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Employee_id is a non-negative integer\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    ",
+							"    responseData.forEach(function (employee) {",
+							"        pm.expect(employee.employee_id).to.be.a('number').and.to.be.at.least(0);",
+							"    });",
+							"});",
+							"",
+							"",
+							"",
+							"pm.test(\"Employee_id is a unique identifier for each employee\", function () {",
+							"  const responseData = pm.response.json();",
+							"",
+							"  pm.expect(responseData).to.be.an('array');",
+							"  ",
+							"  const employeeIds = new Set();",
+							"  responseData.forEach(function(employee) {",
+							"    pm.expect(employee.employee_id).to.exist;",
+							"    pm.expect(employeeIds.has(employee.employee_id)).to.be.false;",
+							"    employeeIds.add(employee.employee_id);",
+							"  });",
+							"});",
+							"",
+							"",
+							"pm.test(\"Name is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    responseData.forEach(function(employee) {",
+							"        pm.expect(employee.name).to.exist.and.to.be.a('string').and.to.have.lengthOf.at.least(1, \"Name should not be empty\");",
+							"    });",
+							"});",
+							"",
+							"",
+							"pm.test(\"Job_title is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    responseData.forEach(function(employee) {",
+							"        pm.expect(employee.job_title).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+							"    });",
+							"});",
+							"",
+							"",
+							"pm.test(\"Job_type is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    ",
+							"    responseData.forEach(function(employee) {",
+							"        pm.expect(employee.job_type).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Job_type should not be empty\");",
+							"    });",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"createdEmployeeCounter\", 0);",
+							"pm.environment.set(\"updateEmployeeCounter\", 0);",
+							"",
+							"postman.setNextRequest(\"Add Employee\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/employees",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"employees"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Employee",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the required fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.address).to.exist;",
+							"    pm.expect(responseData.employee_id).to.exist;",
+							"    pm.expect(responseData.job_title).to.exist;",
+							"    pm.expect(responseData.job_type).to.exist;",
+							"    pm.expect(responseData.name).to.exist;",
+							"    pm.expect(responseData.phone_number).to.exist;",
+							"    pm.expect(responseData.profile_pic).to.exist;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Employee ID is a non-negative integer\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.employee_id).to.exist.and.to.be.a('number');",
+							"    pm.expect(responseData.employee_id).to.be.at.least(0, \"Employee ID should be a non-negative integer\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Phone number is in a valid format\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData.phone_number).to.match(/^\\d{3}-\\d{3}-\\d{4}$/);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Profile picture is a non-empty string\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.profile_pic).to.exist.and.to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+							"});",
+							"",
+							"let createdEmployeeCounter = pm.environment.get(\"createdEmployeeCounter\") || 0;",
+							"console.log('Initial createdEmployeeCounter:', createdEmployeeCounter);",
+							"",
+							"createdEmployeeCounter++;",
+							"console.log('Incremented createdEmployeeCounter to:', createdEmployeeCounter);",
+							"",
+							"pm.environment.set(\"createdEmployeeCounter\", createdEmployeeCounter);",
+							"console.log('Updated createdEmployeeCounter in environment.');",
+							"",
+							"if (createdEmployeeCounter < 5) {",
+							"    postman.setNextRequest(\"Add Employee\");",
+							"    console.log('Next request set to \"Add Employee\"');",
+							"} else {",
+							"    postman.setNextRequest(\"Get Single Employee\");",
+							"    console.log('Next request set to \"Get Single Employee\"');",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"{{$randomFullName}}\",\n    \"job_title\": \"{{$randomJobTitle}}\",\n    \"job_type\": \"{{$randomJobType}}\",\n    \"phone_number\": \"{{$randomPhoneNumber}}\",\n    \"address\": \"{{$randomStreetAddress}}\",\n    \"profile_pic\": \"{{$randomAvatarImage}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/employees",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"employees"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Single Employee",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the required fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.address).to.exist;",
+							"    pm.expect(responseData.employee_id).to.exist;",
+							"    pm.expect(responseData.job_title).to.exist;",
+							"    pm.expect(responseData.job_type).to.exist;",
+							"    pm.expect(responseData.name).to.exist;",
+							"    pm.expect(responseData.phone_number).to.exist;",
+							"    pm.expect(responseData.profile_pic).to.exist;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Employee ID is a non-negative integer\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.employee_id).to.be.a('number').and.to.satisfy((id) => id >= 0, \"Employee ID should be a non-negative integer\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Profile picture is a non-empty string\", function () {",
+							"  const responseData = pm.response.json();",
+							"",
+							"  pm.expect(responseData.profile_pic).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set('url', 'http://localhost:5000');",
+							"",
+							"pm.sendRequest({",
+							"    url: pm.environment.get(\"url\") + \"/api/employees\",",
+							"    method: 'GET',",
+							"}, (error, response) => {",
+							"    if (error) {",
+							"        console.error('Error:', error);",
+							"        return;",
+							"    }",
+							"",
+							"    if (response.code === 200) {",
+							"        const employeeData = response.json();",
+							"        if (Array.isArray(employeeData) && employeeData.length > 0) {",
+							"            const randomEmployee1 = employeeData[Math.floor(Math.random() * employeeData.length)];",
+							"            const randomEmployee2 = employeeData[Math.floor(Math.random() * employeeData.length)];",
+							"",
+							"            const employeeIds = [randomEmployee1.employee_id, randomEmployee2.employee_id];",
+							"            pm.environment.set('employeeIds', JSON.stringify(employeeIds));",
+							"",
+							"            const selectedEmployeeId = employeeIds[Math.floor(Math.random() * employeeIds.length)];",
+							"            pm.environment.set('employeeId', selectedEmployeeId);",
+							"        } else {",
+							"            console.error('No employee data found in the response.');",
+							"        }",
+							"    } else {",
+							"        console.error('Failed to retrieve employee data. Response code: ' + response.code);",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/employees/{{employeeId}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"employees",
+						"{{employeeId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Updating Employee",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Employee ID is a non-negative integer\", function () {",
+							"  const responseData = pm.response.json();",
+							"",
+							"  pm.expect(responseData.employee_id).to.be.a('number');",
+							"  pm.expect(responseData.employee_id).to.be.at.least(0);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Phone number is in a valid format\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.phone_number).to.match(/^\\d{3}-\\d{3}-\\d{4}$/, \"Phone number should be in format XXX-XXX-XXXX\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Profile picture is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.profile_pic).to.be.a('string');",
+							"    pm.expect(responseData.profile_pic).to.not.be.empty;",
+							"});",
+							"",
+							"let updateEmployeeCounter = pm.globals.get(\"updateEmployeeCounter\") || 0;",
+							"console.log('Initial updateEmployeeCounter:', updateEmployeeCounter);",
+							"",
+							"updateEmployeeCounter++;",
+							"console.log('Incremented updateEmployeeCounter to:', updateEmployeeCounter);",
+							"",
+							"pm.globals.set(\"updateEmployeeCounter\", updateEmployeeCounter);",
+							"console.log('Updated updateEmployeeCounter in globals.');",
+							"",
+							"if (updateEmployeeCounter < 2) {",
+							"    postman.setNextRequest(\"Updating Employee\");",
+							"    console.log('Next request set to \"Updating Employee\"');",
+							"} else {",
+							"    pm.globals.set(\"updateEmployeeCounter\", 0);",
+							"    postman.setNextRequest(\"Deleting a Employee\");",
+							"    console.log('Next request set to \"Deleting a Employee\"');",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var employeeIds = pm.environment.get('employeeIds');",
+							"var employeeIds = JSON.parse(employeeIds);",
+							"var employeeIdToUpdate = _.sample(employeeIds);",
+							"",
+							"pm.environment.set('employeeIdToUpdate', employeeIdToUpdate);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"job_title\": \"{{$randomJobTitle}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/employees/{{employeeIdToUpdate}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"employees",
+						"{{employeeIdToUpdate}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deleting a Employee",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Validate the response message\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.message).to.exist.and.to.be.a('string');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is within an acceptable range\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var employeeIds = pm.environment.get('employeeIds');",
+							"var employeeIds = JSON.parse(employeeIds);",
+							"",
+							"var employeeIdToDelete = _.sample(employeeIds);",
+							"",
+							"pm.environment.set('employeeIdToDelete', employeeIdToDelete);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/employees/{{employeeIdToDelete}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"employees",
+						"{{employeeIdToDelete}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.globals.set('url', 'localhost:5000');"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
