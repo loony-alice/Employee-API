@@ -20,7 +20,7 @@ jobs:
       - name: Install node
         uses: actions/checkout@v3
         with:
-          node-version: '18.x'
+          node-version: '14'
 
       - name: Install Newman and Newman-Extra
         run: |
