@@ -260,7 +260,7 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"pm.environment.set('url', 'http://localhost:5000');",
+							"pm.environment.set('url', 'https://code-ymivameeda-em.a.run.app');",
 							"",
 							"pm.sendRequest({",
 							"    url: pm.environment.get(\"url\") + \"/api/employees\",",
@@ -478,7 +478,15 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					"pm.globals.set('url', 'https://code-ymivameeda-em.a.run.app');"
+					"const currentEnvironment = pm.environment.name;",
+					"",
+					"if (currentEnvironment === 'Dev') {",
+					"    pm.environment.set('url', 'localhost:5000');",
+					"} else if (currentEnvironment === 'Prod') {",
+					"    pm.environment.set('url', 'https://code-ymivameeda-em.a.run.app');",
+					"} else {",
+					"    console.error('Unknown environment. Please set the environment correctly.');",
+					"}"
 				]
 			}
 		},
